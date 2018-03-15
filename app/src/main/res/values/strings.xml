@@ -1,4 +1,11 @@
 <resources>
-    <string name="app_name">JobSearchApp</string>
+    <string name="app_name">Jobvago</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="phd">PhD</string>
+    <string name="m_sc">M.Sc.</string>
+    <string name="b_sc">B.Sc.</string>
+    <string name="senior">Senior</string>
+    <string name="associate">Associate</string>
+    <string name="chooseDegree">Choose your degree level(s):</string>
+    <string name="chooseExp">Choose your experience level(s):</string>
 </resources>
