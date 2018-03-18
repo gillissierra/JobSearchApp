@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
-    
-
     public void onCheckboxClicked(android.view.View view) {
         //Array to store filters
 

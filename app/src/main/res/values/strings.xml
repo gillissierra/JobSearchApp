@@ -8,4 +8,8 @@
     <string name="associate">Associate</string>
     <string name="chooseDegree">Choose your degree level(s):</string>
     <string name="chooseExp">Choose your experience level(s):</string>
+    <string name="searchButton">Search</string>
+
+    <string name="searchResult">Results</string>
+    <string name="resultsWelcome">Here is your top result:</string>
 </resources>
