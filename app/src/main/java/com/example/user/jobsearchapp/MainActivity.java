@@ -1,9 +1,16 @@
 package com.example.user.jobsearchapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String EXTRA_QUERY = "com.example.user.jobsearchapp.QUERY";
+    ArrayList<String> queryTerms = new ArrayList<String>();
 
     public void onCheckboxClicked(android.view.View view) {
         //Array to store filters
@@ -16,29 +23,29 @@ public class MainActivity extends AppCompatActivity {
         switch(view.getId()) {
             case R.id.checkBoxPhD:
                 if (checked)
-                    //Send PhD into query terms
-
+                    queryTerms.add("PhD");
                     break;
             case R.id.checkBoxMSc:
                 if (checked)
-                    //Send Masters into query terms
+                    queryTerms.add("Masters");
+                    queryTerms.add("Master's");
                     break;
             case R.id.checkBoxBSc:
                 if (checked)
-                    //Send Bachelor's into query terms
+                    queryTerms.add("B.Sc.");
+                    queryTerms.add("BSc");
                     break;
         }
         switch(view.getId()) {
             case R.id.checkBoxSenior:
                 if (checked)
-                    //Send Senior into query terms
+                    queryTerms.add("Senior");
                     break;
             case R.id.checkBoxAssoc:
                 if (checked)
-                    //Send Assistant into query terms
+                    queryTerms.add("Associate");
                     break;
         }
-
 
     }
 
@@ -48,5 +55,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    //Grab the website source
+        //Grab the website source when search is clicked
+
+    public void sendSearch(View view){
+        //Go to the next activity so the user cant press anything
+        //Requires building an intent
+        android.content.Intent intent = new Intent(this, Main2Activity.class);
+        //An Intent can carry data types as key-value pairs called extras
+        intent.putStringArrayListExtra(EXTRA_QUERY, (ArrayList<String>) queryTerms);
+        startActivity(intent);
+    }
 }
