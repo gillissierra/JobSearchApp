@@ -24,66 +24,71 @@ public class Main2Activity extends AppCompatActivity {
     Intent intent=getIntent();
     ArrayList<String> queryTerms = intent.getStringArrayListExtra("EXTRA_QUERY");
 
-    hasLinks(queryTerms);
 
-    public static ArrayList<String> hasLinks(ArrayList<String> queryTerms) {
-        String page = "https://www.monster.ca/jobs/search/?q=bioinformatics";
-        String webpage = getWebpage(page);
+        public static ArrayList<String> hasLinks (ArrayList < String > queryTerms) {
+            String page = "https://www.monster.ca/jobs/search/?q=bioinformatics";
+            String webpage = getWebpage(page);
 
-        //Pattern to search for all the job links displayed on the page using regex
-        Pattern p = Pattern.compile("(\"url\":\")(.*?)(\"})");
-        Matcher m = p.matcher(webpage);
-        //Push all links into an array
-        ArrayList<String> jobLinks = new ArrayList<String>();
+            //Pattern to search for all the job links displayed on the page using regex
+            Pattern p = Pattern.compile("(\"url\":\")(.*?)(\"})");
+            Matcher m = p.matcher(webpage);
+            //Push all links into an array
+            ArrayList<String> jobLinks = new ArrayList<String>();
 
-        //While loop to grab just the links in the webpage
-        while (m.find()) {
-            jobLinks.add(m.group(2));
-        }
-
-        //Create an iterator to continue through the arraylist
-        Iterator<String> itr = jobLinks.iterator();
-
-        ArrayList<String> bodies = new ArrayList<String>();
-
-        //Display all links
-        while (itr.hasNext()) {
-
-            //Adds the link to job
-            String jobLink = itr.next();
-            String webPage2 = getWebpage(jobLink);
-
-            //Grabs just the job desc from the webpage
-            bodies.add(parseJob(webPage2));
-        }
-
-        //Choose specific links that contain the keywords
-        ArrayList<String> qualifiedLinks = chooseLinks(bodies, queryTerms);
-
-        return qualifiedLinks;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            //While loop to grab just the links in the webpage
+            while (m.find()) {
+                jobLinks.add(m.group(2));
             }
-        });
-    }
-        //Display results of Search
-    //public static void displayLinks(ArrayList<String> queryTerms) {
-    //    TextView textView = findViewById(R.id.textView);
-    //    textView.setText(hasLinks(queryTerms).toString());
-    //}
+
+            //Create an iterator to continue through the arraylist
+            Iterator<String> itr = jobLinks.iterator();
+
+            ArrayList<String> bodies = new ArrayList<String>();
+
+            //Display all links
+            while (itr.hasNext()) {
+
+                //Adds the link to job
+                String jobLink = itr.next();
+                String webPage2 = getWebpage(jobLink);
+
+                //Grabs just the job desc from the webpage
+                bodies.add(parseJob(webPage2));
+            }
+
+            //Choose specific links that contain the keywords
+            ArrayList<String> qualifiedLinks = chooseLinks(bodies, queryTerms);
+
+            return qualifiedLinks;
+        }
+
+        @Override
+        protected void onCreate (Bundle savedInstanceState){
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main2);
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+
+            //Display results of Search
+            TextView stringTextView = (TextView)findViewById(R.id.textView1);
+            ArrayList<String> qualJobLinks =  hasLinks(queryTerms);
+
+            //Printing string array list values on screen.
+
+            for(int i=0; i < qualJobLinks.size(); i++){
+                stringTextView.setText(stringTextView.getText() + qualJobLinks.get(i) + " , ");
+            }
+
+        }
 
     public static String getWebpage(String page){
         String webpage = "";
