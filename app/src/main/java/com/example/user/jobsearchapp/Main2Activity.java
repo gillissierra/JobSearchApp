@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,41 +24,44 @@ public class Main2Activity extends AppCompatActivity {
     Intent intent=getIntent();
     ArrayList<String> queryTerms = intent.getStringArrayListExtra("EXTRA_QUERY");
 
-    String page = "https://www.monster.ca/jobs/search/?q=bioinformatics";
-    String webpage = getWebpage(page);
+    hasLinks(queryTerms);
 
-    //Pattern to search for all the job links displayed on the page using regex
-    Pattern p = Pattern.compile("(\"url\":\")(.*?)(\"})");
-    Matcher m = p.matcher(webpage);
-    //Push all links into an array
-    ArrayList<String> jobLinks = new ArrayList<String>();
+    public static ArrayList<String> hasLinks(ArrayList<String> queryTerms) {
+        String page = "https://www.monster.ca/jobs/search/?q=bioinformatics";
+        String webpage = getWebpage(page);
 
-    //While loop to grab just the links in the webpage
-    while(m.find()){
-        jobLinks.add(m.group(2));
-    }
+        //Pattern to search for all the job links displayed on the page using regex
+        Pattern p = Pattern.compile("(\"url\":\")(.*?)(\"})");
+        Matcher m = p.matcher(webpage);
+        //Push all links into an array
+        ArrayList<String> jobLinks = new ArrayList<String>();
 
-    //Create an iterator to continue through the arraylist
-    Iterator<String> itr = jobLinks.iterator();
+        //While loop to grab just the links in the webpage
+        while (m.find()) {
+            jobLinks.add(m.group(2));
+        }
 
-    ArrayList<String> qualified = new ArrayList<String>();
+        //Create an iterator to continue through the arraylist
+        Iterator<String> itr = jobLinks.iterator();
 
-    //Display all links
-    while(itr.hasNext()){
+        ArrayList<String> bodies = new ArrayList<String>();
 
-        //Adds the link to job
-        String job = itr.next();
-        String webPage2 = getWebpage(job);
+        //Display all links
+        while (itr.hasNext()) {
 
-        //Grabs just the important parts of the webpage
-        String body = parseJob(webPage2);
+            //Adds the link to job
+            String jobLink = itr.next();
+            String webPage2 = getWebpage(jobLink);
+
+            //Grabs just the job desc from the webpage
+            bodies.add(parseJob(webPage2));
+        }
 
         //Choose specific links that contain the keywords
-        boolean checkQLevel = chooseLinks(body, queryTerms.toString());
-        if(checkQLevel)
-            qualified.add(job);
+        ArrayList<String> qualifiedLinks = chooseLinks(bodies, queryTerms);
 
-    } //End While
+        return qualifiedLinks;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +78,12 @@ public class Main2Activity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
-        //Display results of Search
-        TextView textView = findViewById(R.id.textView);
-        textView.setText(qualified.toString());
     }
+        //Display results of Search
+    //public static void displayLinks(ArrayList<String> queryTerms) {
+    //    TextView textView = findViewById(R.id.textView);
+    //    textView.setText(hasLinks(queryTerms).toString());
+    //}
 
     public static String getWebpage(String page){
         String webpage = "";
@@ -147,22 +152,34 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     //Picks weblinks which contain the keywords specified by the user
-    public static boolean chooseLinks(String body, String QLevel){
+    public static ArrayList<String> chooseLinks(ArrayList<String> bodies, ArrayList<String> QLevel){
 
-        boolean checker;
+        //New list to return qualified list
+        ArrayList<String> qualified = new ArrayList<String>();
 
-        Pattern p = Pattern.compile(QLevel);
-        Matcher m = p.matcher(body);
+        //Iterators to go through the array lists
+        Iterator<String> bodyItr = bodies.iterator();
+        Iterator<String> QLevelItr = QLevel.iterator();
 
-        if(m.find()){
-            checker = true;
-        }
-        else{
-            checker = false;
-        }
+        while(bodyItr.hasNext()) { //Loop through bodies
+            String body = bodyItr.next();
+            while (QLevelItr.hasNext()) { //Loop through Qualification levels
 
-        return checker;
-    }
+                String level = QLevelItr.next();
+
+                Pattern p = Pattern.compile(level);
+                Matcher m = p.matcher(body);
+
+                if (m.find()) {
+                    qualified.add(body);
+                    break;
+                }
+
+            } //End QLevel while
+        } //End Body while
+
+        return qualified;
+    } //End chooseLinks
 
 
-}
+} //End Main2Activity

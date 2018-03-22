@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
+//To DoL show all
         //Grab the website source when search is clicked
 
     public void sendSearch(View view){
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         //Requires building an intent
         android.content.Intent intent = new Intent(this, Main2Activity.class);
         //An Intent can carry data types as key-value pairs called extras
-        intent.putStringArrayListExtra(EXTRA_QUERY, (ArrayList<String>) queryTerms);
+        intent.putStringArrayListExtra(EXTRA_QUERY, queryTerms);
         startActivity(intent);
     }
 }
