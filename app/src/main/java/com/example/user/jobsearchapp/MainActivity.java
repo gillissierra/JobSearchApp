@@ -60,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
     public void sendSearch(View view){
         //Go to the next activity so the user cant press anything
         //Requires building an intent
-        android.content.Intent intent = new Intent(this, Main2Activity.class);
+        Intent act2intent = new Intent(getBaseContext(), Main2Activity.class);
         //An Intent can carry data types as key-value pairs called extras
-        intent.putStringArrayListExtra(EXTRA_QUERY, queryTerms);
-        startActivity(intent);
+        act2intent.putStringArrayListExtra(EXTRA_QUERY, queryTerms);
+        startActivity(act2intent);
     }
 }

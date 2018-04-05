@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,15 +21,81 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.*;
 
 public class Main2Activity extends AppCompatActivity {
 
-    Intent intent=getIntent();
-    ArrayList<String> queryTerms = intent.getStringArrayListExtra("EXTRA_QUERY");
+    private List<JobPost> jobList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private JobPostsAdapter jAdapter;
+
+        @Override
+        protected void onCreate (Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
 
-        public static ArrayList<String> MonsterLinks(ArrayList < String > queryTerms) {
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+        jAdapter = new JobPostsAdapter(jobList);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(jAdapter);
+
+
+        // row click listener
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                JobPost movie = jobList.get(position);
+                Toast.makeText(getApplicationContext(), movie.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
+        compileJobs();
+    }
+
+
+    private void compileJobs(){
+
+        Intent act2intent = getIntent();
+        ArrayList<String> queryTerms = act2intent.getStringArrayListExtra("EXTRA_QUERY");
+
+            ArrayList<String> IndJobs = IndeedGrab(queryTerms);
+            ArrayList<String> MonJobs = MonsterGrab(queryTerms);
+
+            ArrayList<String> AllJobs = new ArrayList<String>();
+
+            for(int i=0; i< IndJobs.size(); i++){
+                AllJobs.add(IndJobs.get(i));
+            }
+            for(int i=0; i < MonJobs.size();i++){
+                AllJobs.add(IndJobs.get(i));
+            }
+
+            String[] AllJPosts = new String[AllJobs.size()];
+
+            for(int i=0; i < AllJobs.size(); i=i+5) {
+                                            //Job title     Site Source     Post Date
+                JobPost jobpost = new JobPost(AllJPosts[i],AllJPosts[i+1],AllJPosts[i+2]);
+            }
+            jAdapter.notifyDataSetChanged();
+    }
+
+
+
+
+
+        public static ArrayList<String> MonsterGrab(ArrayList < String > queryTerms) {
             String page = "https://www.monster.ca/jobs/search/?q=bioinformatics";
             String webpage = getWebpage(page);
 
@@ -33,36 +103,66 @@ public class Main2Activity extends AppCompatActivity {
             Pattern p = Pattern.compile("(\"url\":\")(.*?)(\"})");
             Matcher m = p.matcher(webpage);
             //Push all links into an array
-            ArrayList<String> jobLinks = new ArrayList<String>();
+            ArrayList<String> MonJobLinks = new ArrayList<String>();
 
             //While loop to grab just the links in the webpage
             while (m.find()) {
-                jobLinks.add(m.group(2));
+                MonJobLinks.add(m.group(2));
+            }
+
+            //Pattern to search for all the job titles displayed on the page using regex
+            Pattern p2 = Pattern.compile("(rel=\"nofollow\">)([\\w\\W]+?)(</a>)");
+            m = p2.matcher(webpage);
+            //Push all links into an array
+            ArrayList<String> MonJobTitle = new ArrayList<String>();
+
+            //While loop to grab just the titles in the webpage
+            while (m.find()) {
+                MonJobTitle.add(m.group(2));
+            }
+
+            //Pattern to search for all the job post dates displayed on the page using regex
+            Pattern p3 = Pattern.compile("(<time datetime=\"[\\W\\w]{16}\">)([\\w\\W]+?)(</time>)");
+            m = p3.matcher(webpage);
+            //Push all links into an array
+            ArrayList<String> MonJobPDate = new ArrayList<String>();
+
+            //While loop to grab just the titles in the webpage
+            while (m.find()) {
+                MonJobPDate.add(m.group(2));
             }
 
             //Create an iterator to continue through the arraylist
-            Iterator<String> itr = jobLinks.iterator();
+            Iterator<String> itr = MonJobLinks.iterator();
 
-            ArrayList<String> bodies = new ArrayList<String>();
+            ArrayList<String> MonBodies = new ArrayList<String>();
 
             //Display all links
             while (itr.hasNext()) {
-
                 //Adds the link to job
                 String jobLink = itr.next();
                 String webPage2 = getWebpage(jobLink);
-
                 //Grabs just the job desc from the webpage
-                bodies.add(parseJob(webPage2));
+                MonBodies.add(parseJob(webPage2));
             }
 
             //Choose specific links that contain the keywords
-            ArrayList<String> qualifiedLinks = chooseLinks(bodies, queryTerms);
+            ArrayList<Integer> MonQualified = chooseLinks(MonBodies, queryTerms);
 
-            return qualifiedLinks;
+            ArrayList<String> QualMonster = new ArrayList<String>();
+
+            for(int i=0; i < MonQualified.size(); i++){
+                QualMonster.add(MonJobTitle.get(MonQualified.get(i)));
+                QualMonster.add("Monster");
+                QualMonster.add(MonJobPDate.get(MonQualified.get(i)));
+                QualMonster.add(MonBodies.get(MonQualified.get(i)));
+                QualMonster.add(MonJobLinks.get(MonQualified.get(i)));
+            }
+
+            return QualMonster;
         }
 
-        public static ArrayList<String> IndeedLinks(ArrayList < String > queryTerms) {
+        public static ArrayList<String> IndeedGrab(ArrayList < String > queryTerms) {
             String page = "https://www.indeed.ca/jobs?q=Bioinformatics&l=";
             String webpage = getWebpage(page);
 
@@ -70,51 +170,69 @@ public class Main2Activity extends AppCompatActivity {
             Pattern p = Pattern.compile("(<h2 id=jl_[\\w\\W]{16}\\sclass=\"jobtitle\">[\\s\n\r]+<a[\\s\n\r]+href=\")([\\w\\W]+?)(\"\\s+target=\"_blank\")");
             Matcher m = p.matcher(webpage);
             //Push all links into an array
-            ArrayList<String> jobLinks = new ArrayList<String>();
+            ArrayList<String> IndJobLinks = new ArrayList<String>();
 
             //While loop to grab just the links in the webpage
             while (m.find()) {
-                jobLinks.add("https://ca.indeed.com"+m.group(2));
+                IndJobLinks.add("https://ca.indeed.com"+m.group(2));
+            }
+
+            //Pattern to search for all the job titles displayed on the page using regex
+            Pattern p2 = Pattern.compile("(\',title:\')([\\w\\W]+?)(\',locid:\')");
+            m = p2.matcher(webpage);
+            //Push all links into an array
+            ArrayList<String> IndJobTitles = new ArrayList<String>();
+
+            //While loop to grab just the job titles in the webpage
+            while (m.find()) {
+                IndJobTitles.add(m.group(2));
+            }
+
+            //Pattern to search for all the job post dates displayed on the page using regex
+            Pattern p3 = Pattern.compile("(<span class=\"date\">)([\\w\\W]+?)(</span>)");
+            m = p3.matcher(webpage);
+            //Push all links into an array
+            ArrayList<String> IndJobPDate = new ArrayList<String>();
+
+            //While loop to grab just the job post dates in the webpage
+            while (m.find()) {
+                IndJobPDate.add(m.group(2));
             }
 
             //Create an iterator to continue through the arraylist
-            Iterator<String> itr = jobLinks.iterator();
-
-            ArrayList<String> bodies = new ArrayList<String>();
+            Iterator<String> itr = IndJobLinks.iterator();
+            ArrayList<String> IndBodies = new ArrayList<String>();
 
             //Display all links
             while (itr.hasNext()) {
-
                 //Adds the link to job
                 String jobLink = itr.next();
                 String webPage2 = getWebpage(jobLink);
-
                 //Grabs just the job desc from the webpage
-                bodies.add(parseJob(webPage2));
+                IndBodies.add(parseJob(webPage2));
             }
 
 
         //Choose specific links that contain the keywords
-        ArrayList<String> qualifiedLinks = chooseLinks(bodies, queryTerms);
+        ArrayList<Integer> IndQualified = chooseLinks(IndBodies, queryTerms);
 
-        return qualifiedLinks;
+        ArrayList<String> QualIndeed = new ArrayList<String>();
+
+        for(int i=0; i < IndQualified.size(); i++){
+            QualIndeed.add(IndJobTitles.get(i));
+            QualIndeed.add("Indeed");
+            QualIndeed.add(IndJobPDate.get(i));
+            QualIndeed.add(IndBodies.get(i));
+            QualIndeed.add(IndJobLinks.get(i));
+        }
+
+        return QualIndeed;
     }
-
+/*
         @Override
         protected void onCreate (Bundle savedInstanceState){
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main2);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
 
             //Display results of Search
             TextView stringTextView = (TextView)findViewById(R.id.textView1);
@@ -132,7 +250,7 @@ public class Main2Activity extends AppCompatActivity {
                 stringTextView.setText(qualJobLinksI.get(i));
             }
         }
-
+*/
     public static String getWebpage(String page){
         String webpage = "";
 
@@ -197,7 +315,7 @@ public class Main2Activity extends AppCompatActivity {
         }
         return descMonster;
     }
-        //This m}ethod parses the job description
+        //This method parses the job description
     public static String parseJob(String body){
         //Stuff to parse out of body
         Pattern p1 = Pattern.compile("<div [^>]+>");
@@ -222,35 +340,37 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     //Picks weblinks which contain the keywords specified by the user
-    public static ArrayList<String> chooseLinks(ArrayList<String> bodies, ArrayList<String> QLevel){
+    public static ArrayList<Integer> chooseLinks(ArrayList<String> bodies, ArrayList<String> QLevel){
 
         //New list to return qualified list
         ArrayList<String> qualified = new ArrayList<String>();
+        ArrayList<Integer> MatchPos = new ArrayList<Integer>();
 
         //Iterators to go through the array lists
         Iterator<String> bodyItr = bodies.iterator();
-        Iterator<String> QLevelItr = QLevel.iterator();
 
+        Integer count =0;
         while(bodyItr.hasNext()) { //Loop through bodies
             String body = bodyItr.next();
-            while (QLevelItr.hasNext()) { //Loop through Qualification levels
 
-                String level = QLevelItr.next();
+            for(int i=0; i<QLevel.size(); i++) { //Loop through Qualification levels
+
+                String level = QLevel.get(i);
 
                 Pattern p = Pattern.compile(level);
                 Matcher m = p.matcher(body);
 
                 if (m.find()) {
                     qualified.add(body);
+                    MatchPos.add(count);
                     break;
                 }
 
-            } //End QLevel while
+            } //End QLevel for
+            count++;
         } //End Body while
 
-        return qualified;
+        return MatchPos;
     } //End chooseLinks
-
-
 
 } //End Main2Activity
