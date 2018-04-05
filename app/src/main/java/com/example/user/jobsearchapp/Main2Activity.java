@@ -143,7 +143,7 @@ public class Main2Activity extends AppCompatActivity {
                 String jobLink = itr.next();
                 String webPage2 = getWebpage(jobLink);
                 //Grabs just the job desc from the webpage
-                MonBodies.add(parseJob(webPage2));
+                MonBodies.add(parseJob(MonsterDesc(webPage2)));
             }
 
             //Choose specific links that contain the keywords
@@ -162,55 +162,56 @@ public class Main2Activity extends AppCompatActivity {
             return QualMonster;
         }
 
-        public static ArrayList<String> IndeedGrab(ArrayList < String > queryTerms) {
-            String page = "https://www.indeed.ca/jobs?q=Bioinformatics&l=";
-            String webpage = getWebpage(page);
+    public static ArrayList<String> IndeedGrab(ArrayList < String > queryTerms) {
+        String page = "https://www.indeed.ca/jobs?q=Bioinformatics&l=";
+        String webpage = getWebpage(page);
 
-            //Pattern to search for all the job links displayed on the page using regex
-            Pattern p = Pattern.compile("(<h2 id=jl_[\\w\\W]{16}\\sclass=\"jobtitle\">[\\s\n\r]+<a[\\s\n\r]+href=\")([\\w\\W]+?)(\"\\s+target=\"_blank\")");
-            Matcher m = p.matcher(webpage);
-            //Push all links into an array
-            ArrayList<String> IndJobLinks = new ArrayList<String>();
+        //Pattern to search for all the job links displayed on the page using regex
+        Pattern p = Pattern.compile("(<h2 id=jl_[\\w\\W]{16}\\sclass=\"jobtitle\">[\\s\n\r]+<a[\\s\n\r]+href=\")([\\w\\W]+?)(\"\\s+target=\"_blank\")");
+        Matcher m = p.matcher(webpage);
+        //Push all links into an array
+        ArrayList<String> IndJobLinks = new ArrayList<String>();
 
-            //While loop to grab just the links in the webpage
-            while (m.find()) {
-                IndJobLinks.add("https://ca.indeed.com"+m.group(2));
-            }
+        //While loop to grab just the links in the webpage
+        while (m.find()) {
+            IndJobLinks.add("https://ca.indeed.com"+m.group(2));
+        }
 
-            //Pattern to search for all the job titles displayed on the page using regex
-            Pattern p2 = Pattern.compile("(\',title:\')([\\w\\W]+?)(\',locid:\')");
-            m = p2.matcher(webpage);
-            //Push all links into an array
-            ArrayList<String> IndJobTitles = new ArrayList<String>();
+        //Pattern to search for all the job titles displayed on the page using regex
+        Pattern p2 = Pattern.compile("(\',title:\')([\\w\\W]+?)(\',locid:\')");
+        m = p2.matcher(webpage);
+        //Push all links into an array
+        ArrayList<String> IndJobTitles = new ArrayList<String>();
 
-            //While loop to grab just the job titles in the webpage
-            while (m.find()) {
-                IndJobTitles.add(m.group(2));
-            }
+        //While loop to grab just the job titles in the webpage
+        while (m.find()) {
+            IndJobTitles.add(m.group(2));
+        }
 
-            //Pattern to search for all the job post dates displayed on the page using regex
-            Pattern p3 = Pattern.compile("(<span class=\"date\">)([\\w\\W]+?)(</span>)");
-            m = p3.matcher(webpage);
-            //Push all links into an array
-            ArrayList<String> IndJobPDate = new ArrayList<String>();
+        //Pattern to search for all the job post dates displayed on the page using regex
+        Pattern p3 = Pattern.compile("(<span class=\"date\">)([\\w\\W]+?)(</span>)");
+        m = p3.matcher(webpage);
+        //Push all links into an array
+        ArrayList<String> IndJobPDate = new ArrayList<String>();
 
-            //While loop to grab just the job post dates in the webpage
-            while (m.find()) {
-                IndJobPDate.add(m.group(2));
-            }
+        //While loop to grab just the job post dates in the webpage
+        while (m.find()) {
+            IndJobPDate.add(m.group(2));
+        }
 
-            //Create an iterator to continue through the arraylist
-            Iterator<String> itr = IndJobLinks.iterator();
-            ArrayList<String> IndBodies = new ArrayList<String>();
+        //Create an iterator to continue through the arraylist
+        Iterator<String> itr = IndJobLinks.iterator();
+        ArrayList<String> IndBodies = new ArrayList<String>();
 
-            //Display all links
-            while (itr.hasNext()) {
-                //Adds the link to job
-                String jobLink = itr.next();
-                String webPage2 = getWebpage(jobLink);
-                //Grabs just the job desc from the webpage
-                IndBodies.add(parseJob(webPage2));
-            }
+        //Display all links
+        while (itr.hasNext()) {
+            //Adds the link to job
+            String jobLink = itr.next();
+            String webPage2 = getWebpage(jobLink);
+            //Grabs just the job desc from the webpage
+            IndBodies.add(parseJob(IndeedDesc(webPage2)));
+        }
+
 
 
         //Choose specific links that contain the keywords
@@ -279,7 +280,7 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     //This method recieves the source code for the job listing and gets the job description
-    public static ArrayList<String> IndeedDesc(String webPage2) {
+    public static String IndeedDesc(String webPage2) {
         //Remove all new lines
         Pattern p = Pattern.compile("[\n]");
         webPage2 = p.matcher(webPage2).replaceAll("");
@@ -290,14 +291,13 @@ public class Main2Activity extends AppCompatActivity {
 
         //Place just the body into a variable called body
         String body = "";
-        ArrayList<String> descIndeed = new ArrayList<String>();
+        //ArrayList<String> descIndeed = new ArrayList<String>();
         while (m.find()) {
-            body += m.group(2);
-            descIndeed.add(parseJob(body));
+            body = m.group(2);
         }
-        return descIndeed;
+        return body;
     }
-    public static ArrayList<String> MonsterDesc(String webPage2) {
+    public static String MonsterDesc(String webPage2) {
         //Remove all new lines
         Pattern p = Pattern.compile("[\n]");
         webPage2 = p.matcher(webPage2).replaceAll("");
@@ -308,14 +308,13 @@ public class Main2Activity extends AppCompatActivity {
 
         //Place just the body into a variable called body
         String body = "";
-        ArrayList<String> descMonster = new ArrayList<String>();
+        //ArrayList<String> descMonster = new ArrayList<String>();
         while (m.find()) {
             body += m.group();
-            descMonster.add(parseJob(body));
         }
-        return descMonster;
+        return body;
     }
-        //This method parses the job description
+    //This method parses the job description
     public static String parseJob(String body){
         //Stuff to parse out of body
         Pattern p1 = Pattern.compile("<div [^>]+>");
