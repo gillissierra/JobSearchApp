@@ -9,7 +9,7 @@ import android.widget.EditText;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_QUERY = "com.example.user.jobsearchapp.QUERY";
+    public String EXTRA_QUERY = "com.example.user.jobsearchapp.QUERY";
     ArrayList<String> queryTerms = new ArrayList<String>();
 
     public void onCheckboxClicked(android.view.View view) {
@@ -24,11 +24,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.checkBoxPhD:
                 if (checked)
                     queryTerms.add("PhD");
+                    queryTerms.add("Ph.D");
                     break;
             case R.id.checkBoxMSc:
                 if (checked)
                     queryTerms.add("Masters");
                     queryTerms.add("Master's");
+                    queryTerms.add("M.Sc");
                     break;
             case R.id.checkBoxBSc:
                 if (checked)
@@ -60,9 +62,9 @@ public class MainActivity extends AppCompatActivity {
     public void sendSearch(View view){
         //Go to the next activity so the user cant press anything
         //Requires building an intent
-        Intent act2intent = new Intent(getBaseContext(), Main2Activity.class);
-        //An Intent can carry data types as key-value pairs called extras
-        act2intent.putStringArrayListExtra(EXTRA_QUERY, queryTerms);
+
+        Intent act2intent = new Intent(this, Main2Activity.class);
+        act2intent.putStringArrayListExtra("TermList", queryTerms);
         startActivity(act2intent);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.user.jobsearchapp;
 
+
 public class JobPost {
     private String title, site, PostDate;
 
@@ -21,18 +22,19 @@ public class JobPost {
     }
 
     public String getPostDate() {
-        return site;
-    }
-
-    public void setYear(String site) {
-        this.site = site;
-    }
-
-    public String getGenre() {
         return PostDate;
     }
 
-    public void setGenre(String PostDate) {
+    public void setPostDate(String PostDate) {
         this.PostDate = PostDate;
     }
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+
 }

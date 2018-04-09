@@ -40,8 +40,8 @@ public class JobPostsAdapter extends RecyclerView.Adapter<JobPostsAdapter.MyView
     public void onBindViewHolder(MyViewHolder holder, int position) {
         JobPost movie = postingList.get(position);
         holder.title.setText(movie.getTitle());
-        holder.PostDate.setText(movie.getGenre());
-        holder.site.setText(movie.getPostDate());
+        holder.site.setText(movie.getSite());
+        holder.PostDate.setText(movie.getPostDate());
     }
 
     @Override
