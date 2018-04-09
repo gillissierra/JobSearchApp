@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main3Activity extends AppCompatActivity {
-    private List<JobPost> jobList = new ArrayList<>();
+    private List<JobPost> jobList2 = new ArrayList<>();
     private RecyclerView recyclerView2;
     private JobPostsAdapter jAdapter2;
 
@@ -30,7 +30,7 @@ public class Main3Activity extends AppCompatActivity {
 
         recyclerView2 = (RecyclerView) findViewById(R.id.recycler_view2);
 
-        jAdapter2 = new JobPostsAdapter(jobList);
+        jAdapter2 = new JobPostsAdapter(jobList2);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView2.setLayoutManager(mLayoutManager);
         recyclerView2.setItemAnimator(new DefaultItemAnimator());
@@ -41,7 +41,7 @@ public class Main3Activity extends AppCompatActivity {
         recyclerView2.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView2, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                JobPost movie = jobList.get(position);
+                JobPost movie = jobList2.get(position);
                 Toast.makeText(getApplicationContext(), movie.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
             }
 
@@ -64,15 +64,19 @@ public class Main3Activity extends AppCompatActivity {
 
             String[] AllJPosts = new String[AllJobs.size()];
 
+            for(int i=0; i < AllJobs.size(); i++){
+                AllJPosts[i] = AllJobs.get(i);
+            }
+
             if(AllJobs == null){
                 JobPost jobPost = new JobPost("Didn't work", "Site", "now");
-                jobList.add(jobPost);
+                jobList2.add(jobPost);
             }else {
 
                 for (int i = 0; i < AllJobs.size(); i = i + 5) {
                     //Job title     Site Source     Post Date
                     JobPost jobpost = new JobPost(AllJPosts[i], AllJPosts[i + 1], AllJPosts[i + 2]);
-                    jobList.add(jobpost);
+                    jobList2.add(jobpost);
                 }
             }
             jAdapter2.notifyDataSetChanged();
