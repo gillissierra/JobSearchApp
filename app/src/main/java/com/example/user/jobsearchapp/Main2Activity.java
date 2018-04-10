@@ -57,8 +57,8 @@ public class Main2Activity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                JobPost movie = jobList.get(position);
-                Toast.makeText(getApplicationContext(), movie.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
+                JobPost PostList = jobList.get(position);
+                Toast.makeText(getApplicationContext(), PostList.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
