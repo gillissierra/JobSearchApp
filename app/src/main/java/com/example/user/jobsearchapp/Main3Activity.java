@@ -51,12 +51,12 @@ public class Main3Activity extends AppCompatActivity {
             }
         }));
 
-        compileJobs();
+        compileJobs2();
 
 
     }
 
-        private void compileJobs(){
+        private void compileJobs2(){
 
             Intent passJobList = getIntent();
             ArrayList<String> AllJobs = passJobList.getStringArrayListExtra("ALLJOBS");

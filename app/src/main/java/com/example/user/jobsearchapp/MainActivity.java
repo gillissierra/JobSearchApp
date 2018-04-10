@@ -31,11 +31,14 @@ public class MainActivity extends AppCompatActivity {
                     queryTerms.add("Masters");
                     queryTerms.add("Master's");
                     queryTerms.add("M.Sc");
+                    queryTerms.add("MD");
+                    queryTerms.add("M.D");
                     break;
             case R.id.checkBoxBSc:
                 if (checked)
                     queryTerms.add("B.Sc.");
                     queryTerms.add("BSc");
+                    queryTerms.add("Bachelor");
                     break;
         }
         switch(view.getId()) {

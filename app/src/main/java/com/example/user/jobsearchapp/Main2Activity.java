@@ -109,17 +109,17 @@ public class Main2Activity extends AppCompatActivity {
             onProgressUpdate("Queries are passed. ex: " + Terms.get(0));
 
                 ArrayList<String> IndJobs = IndeedGrab(Terms);
-                //ArrayList<String> MonJobs = MonsterGrab(Terms);
+                ArrayList<String> MonJobs = MonsterGrab(Terms);
 
                 ArrayList<String> AllJobs = new ArrayList<String>();
 
-                for(int i=0; i< IndJobs.size(); i++){
+               for(int i=0; i< IndJobs.size(); i++){
                     AllJobs.add(IndJobs.get(i));
                 }
-              /* for(int i=0; i < MonJobs.size();i++) {
-                   AllJobs.add(IndJobs.get(i));
+               for(int i=0; i < MonJobs.size();i++) {
+                   AllJobs.add(MonJobs.get(i));
                }
-               */
+
 
 
             onProgressUpdate("Jobs Compiled ex: "+ AllJobs.get(0));
@@ -141,11 +141,11 @@ public class Main2Activity extends AppCompatActivity {
 
 
         public ArrayList<String> MonsterGrab(ArrayList < String > queryTerms) {
-            String page = "https://www.monster.ca/jobs/search/?q=bioinformatics";
+            String page = "https://www.monster.ca/jobs/search/?q=Bioinformatics";
             String webpage = getWebpage(page);
 
             //Pattern to search for all the job links displayed on the page using regex
-            Pattern p = Pattern.compile("(\"url\":\")([\\w\\W]+?)(\"[\\W])");
+            Pattern p = Pattern.compile("(\"url\":\")(.*?)(\")"); //([\w\W\s]+?)(","IsFastApply)
             Matcher m = p.matcher(webpage);
             //Push all links into an array
             ArrayList<String> MonJobLinks = new ArrayList<String>();
@@ -153,33 +153,30 @@ public class Main2Activity extends AppCompatActivity {
             //While loop to grab just the links in the webpage
             String tempLink = "";
 
-            publishProgress("Started Monster Links");
+            publishProgress("Started Grabbing Monster Links");
 
             while (m.find()) {
                 tempLink = m.group(2);
 
+                    //tempLink=Html.fromHtml(tempLink).toString();
+                    Pattern HTML = Pattern.compile("(&#8217;|&#39;|#39;|’)"); //|â\?\?
+                    tempLink = HTML.matcher(tempLink).replaceAll("'");
 
-                tempLink=Html.fromHtml(tempLink).toString();
-                Pattern HTML= Pattern.compile("(&#8217;|&#39;|#39;|â\\?\\?)");
-                tempLink = HTML.matcher(tempLink).replaceAll("'");
+                    Pattern HTML2 = Pattern.compile("&amp;");
+                    tempLink = HTML2.matcher(tempLink).replaceAll("&");
 
-                Pattern HTML2= Pattern.compile("&amp;");
-                tempLink = HTML2.matcher(tempLink).replaceAll("&");
+                    Matcher HTML3 = Pattern.compile("president").matcher(tempLink);
 
-
-                Matcher HTML3= Pattern.compile("president").matcher(tempLink);
-
-                if(HTML3.find()) {
-
-                }else{
                     MonJobLinks.add(tempLink);
-                }
+                    publishProgress("Matched Monster Link : " + tempLink);
+
+
             }
 
-            publishProgress(" Grabbed Monster Links");
+            publishProgress(" Grabbed Monster Links. ex: " + MonJobLinks);
 
             //Pattern to search for all the job titles displayed on the page using regex
-            Pattern p2 = Pattern.compile("(rel=\"nofollow\">)([\\w\\W]+?)(</a>)");
+            Pattern p2 = Pattern.compile("(rel=\"nofollow\">)([^<][\\w\\W]+?)(</a>)|(&#39;\\)\">)([\\w\\W ]+?)([ <]/a>)");
             m = p2.matcher(webpage);
             //Push all links into an array
             ArrayList<String> MonJobTitle = new ArrayList<String>();
@@ -189,7 +186,7 @@ public class Main2Activity extends AppCompatActivity {
                 MonJobTitle.add(m.group(2));
             }
 
-            publishProgress("Grabbed Monster Job titles");
+            publishProgress("Grabbed Monster Job titles " + MonJobTitle);
 
             //Pattern to search for all the job post dates displayed on the page using regex
             Pattern p3 = Pattern.compile("(<time datetime=\"[\\W\\w]{16}\">)([\\w\\W]+?)(</time>)");
@@ -202,7 +199,7 @@ public class Main2Activity extends AppCompatActivity {
                 MonJobPDate.add(m.group(2));
             }
 
-            publishProgress("Grabbed Monster Post Date");
+            publishProgress("Grabbed Monster Post Date. ex " + MonJobPDate);
 
             //Create an iterator to continue through the arraylist
             Iterator<String> itr = MonJobLinks.iterator();
@@ -364,7 +361,7 @@ public class Main2Activity extends AppCompatActivity {
             webPage2 = p.matcher(webPage2).replaceAll("");
 
             //Grab just the job description from the webpage
-            Pattern p21 = Pattern.compile("(\"jobsearch-JobComponent-description icl-u-xs-mt--md\">)([\\w\\W\\s]+)(</div><div class)");
+            Pattern p21 = Pattern.compile("(\"jobsearch-JobComponent-description icl-u-xs-mt--md\">)([\\w\\W\\s]+?)(</div><div class)");
             Matcher m = p21.matcher(webPage2);
 
             //Place just the body into a variable called body
@@ -381,15 +378,18 @@ public class Main2Activity extends AppCompatActivity {
             webPage2 = p.matcher(webPage2).replaceAll("");
 
             //Grab just the job description from the webpage
-            Pattern p21 = Pattern.compile("<div class=\"details-content .*?</div>?");
+            Pattern p21 = Pattern.compile("(\\{\"title\":\")([\\w\\W\\s]+?)(</div>\",\")");
             Matcher m = p21.matcher(webPage2);
 
             //Place just the body into a variable called body
             String body = "";
             //ArrayList<String> descMonster = new ArrayList<String>();
             while (m.find()) {
-                body += m.group();
+                body += m.group(2);
+                //publishProgress("Grabbed description: " + body);
+
             }
+            publishProgress("Grabbed description");
             return body;
         }
         //This method parses the job description
@@ -443,13 +443,14 @@ public class Main2Activity extends AppCompatActivity {
                         if (m.find()) {
                             //qualified.add(body);
                             MatchPos.add(count);
+
                             break;
                         }
                     } //End QLevel for
                 }
                 count++;
             } //End Body while
-            onProgressUpdate("Found Qualification Match. ex: " + MatchPos.get(0));
+            onProgressUpdate("Found Qualification Match. ex: " + MatchPos);
             return MatchPos;
         } //End chooseLinks
     }// End of Async
