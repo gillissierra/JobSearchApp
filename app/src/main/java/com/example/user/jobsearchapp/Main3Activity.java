@@ -36,22 +36,39 @@ public class Main3Activity extends AppCompatActivity {
         recyclerView2.setItemAnimator(new DefaultItemAnimator());
         recyclerView2.setAdapter(jAdapter2);
 
+        compileJobs2();
+
 
         // row click listener
         recyclerView2.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView2, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
                 JobPost PostList2 = jobList2.get(position);
-                Toast.makeText(getApplicationContext(), PostList2.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
+
+                String JobBody;
+                JobBody = PostList2.getDesc();
+                if(JobBody.length() != 0) {
+                    Intent DescDisplay = new Intent(getBaseContext(), Main4Activity.class);
+                    DescDisplay.putExtra("BodyOfJob", JobBody);
+                    startActivity(DescDisplay);
+                }else{
+                    JobBody = "Sorry bub";
+                        Intent DescDisplay = new Intent(getBaseContext(), Main4Activity.class);
+                        DescDisplay.putExtra("BodyOfJob", JobBody);
+                        startActivity(DescDisplay);
+                }
+
             }
 
             @Override
             public void onLongClick(View view, int position) {
 
             }
+
+
         }));
 
-        compileJobs2();
+
 
 
     }
@@ -68,14 +85,14 @@ public class Main3Activity extends AppCompatActivity {
                 AllJPosts[i] = AllJobs.get(i);
             }
 
-            if(AllJobs == null){
-                JobPost jobPost = new JobPost("Didn't work", "Site", "now");
+            if(AllJobs.size() == 0){
+                JobPost jobPost = new JobPost("Didn't work", "Site", "now", "BackLink", "BackDesc");
                 jobList2.add(jobPost);
             }else {
 
                 for (int i = 0; i < AllJobs.size(); i = i + 5) {
-                    //Job title     Site Source     Post Date
-                    JobPost jobpost = new JobPost(AllJPosts[i], AllJPosts[i + 1], AllJPosts[i + 2]);
+                                            //Job title       Site Source         Post Date
+                    JobPost jobpost = new JobPost(AllJPosts[i], AllJPosts[i + 1], AllJPosts[i + 2],AllJPosts[i + 3], AllJPosts[i + 4]);
                     jobList2.add(jobpost);
                 }
             }

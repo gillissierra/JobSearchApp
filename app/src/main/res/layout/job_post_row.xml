@@ -22,7 +22,7 @@
 
     <TextView
         android:id="@+id/site"
-        android:layout_width="138dp"
+        android:layout_width="158dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/title" />

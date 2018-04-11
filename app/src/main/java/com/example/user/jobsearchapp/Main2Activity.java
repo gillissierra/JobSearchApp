@@ -3,6 +3,8 @@ package com.example.user.jobsearchapp;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -31,68 +33,24 @@ import java.util.regex.*;
 
 public class Main2Activity extends AppCompatActivity {
 
-    private List<JobPost> jobList = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private JobPostsAdapter jAdapter;
+    TextView Update;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Update = findViewById(R.id.UpdateBox);
 
-
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
-        jAdapter = new JobPostsAdapter(jobList);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(jAdapter);
-
-
-        // row click listener
-        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                JobPost PostList = jobList.get(position);
-                Toast.makeText(getApplicationContext(), PostList.getTitle() + " is selected!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));
-
-        compileJobs();
-    }
-
-    private void compileJobs() {
 
         Intent act2intent = getIntent();
         ArrayList<String> queryTerms = act2intent.getStringArrayListExtra("TermList");
 
 
-        JobPost jobpost = new JobPost("Test Job", "Website", "0 Hours ago");
-        jobList.add(jobpost);
-
         Web_Grab AllPosts = new Web_Grab();
         AllPosts.execute(queryTerms);
 
-        jAdapter.notifyDataSetChanged();
-
     }
-
-
-
-
-
-
-
-
 
 
 
@@ -106,7 +64,7 @@ public class Main2Activity extends AppCompatActivity {
 
                 ArrayList<String> Terms = queryTerms[0];
 
-            onProgressUpdate("Queries are passed. ex: " + Terms.get(0));
+            onProgressUpdate("Starting to collect job postings");
 
                 ArrayList<String> IndJobs = IndeedGrab(Terms);
                 ArrayList<String> MonJobs = MonsterGrab(Terms);
@@ -122,16 +80,33 @@ public class Main2Activity extends AppCompatActivity {
 
 
 
-            onProgressUpdate("Jobs Compiled ex: "+ AllJobs.get(0));
+            onProgressUpdate("Jobs Compiled");
             return AllJobs;
 
             }
-
+        @Override
         protected void onProgressUpdate(String... Step){
+
+            Update.setText(Step[0]);
+
+            try {
+                Thread.sleep(200);
+            }
+            catch (InterruptedException e){}
+
             Log.e("Step", "Background Progress: "+ (Step[0]));
         }
 
+
+
         protected void onPostExecute(ArrayList<String> Final){
+
+            Update.setText("Creating final list");
+
+            try {
+                Thread.sleep(4000);
+            }
+            catch (InterruptedException e){}
 
             Intent passJobList = new Intent(getBaseContext(),Main3Activity.class);
             passJobList.putStringArrayListExtra("ALLJOBS", Final);
@@ -168,12 +143,12 @@ public class Main2Activity extends AppCompatActivity {
                     Matcher HTML3 = Pattern.compile("president").matcher(tempLink);
 
                     MonJobLinks.add(tempLink);
-                    publishProgress("Matched Monster Link : " + tempLink);
+                    publishProgress("Matched Monster Link");
 
 
             }
 
-            publishProgress(" Grabbed Monster Links. ex: " + MonJobLinks);
+            publishProgress(" Collected all Monster links");
 
             //Pattern to search for all the job titles displayed on the page using regex
             Pattern p2 = Pattern.compile("(rel=\"nofollow\">)([^<][\\w\\W]+?)(</a>)|(&#39;\\)\">)([\\w\\W ]+?)([ <]/a>)");
@@ -186,7 +161,7 @@ public class Main2Activity extends AppCompatActivity {
                 MonJobTitle.add(m.group(2));
             }
 
-            publishProgress("Grabbed Monster Job titles " + MonJobTitle);
+            publishProgress("Grabbed Monster Job titles ");
 
             //Pattern to search for all the job post dates displayed on the page using regex
             Pattern p3 = Pattern.compile("(<time datetime=\"[\\W\\w]{16}\">)([\\w\\W]+?)(</time>)");
@@ -199,7 +174,7 @@ public class Main2Activity extends AppCompatActivity {
                 MonJobPDate.add(m.group(2));
             }
 
-            publishProgress("Grabbed Monster Post Date. ex " + MonJobPDate);
+            publishProgress("Grabbed Monster Post Dates");
 
             //Create an iterator to continue through the arraylist
             Iterator<String> itr = MonJobLinks.iterator();
@@ -217,7 +192,7 @@ public class Main2Activity extends AppCompatActivity {
                 MonBodies.add(parseJob(MonsterDesc(webPage2)));
             }
 
-            publishProgress("Grabbed and parsed Monster Descriptions");
+            publishProgress("Organized Monster Descriptions");
 
             //Choose specific links that contain the keywords
             ArrayList<Integer> MonQualified = chooseLinks(MonBodies, queryTerms);
@@ -228,12 +203,12 @@ public class Main2Activity extends AppCompatActivity {
                 QualMonster.add(MonJobTitle.get(MonQualified.get(i)));
                 QualMonster.add("Monster");
                 QualMonster.add(MonJobPDate.get(MonQualified.get(i)));
-                QualMonster.add(MonBodies.get(MonQualified.get(i)));
                 QualMonster.add(MonJobLinks.get(MonQualified.get(i)));
+                QualMonster.add(MonBodies.get(MonQualified.get(i)));
             }
 
 
-            publishProgress("Finished Selecting Monster Jobs");
+            publishProgress("Finished compiling Monster Jobs");
 
             return QualMonster;
 
@@ -243,7 +218,7 @@ public class Main2Activity extends AppCompatActivity {
             String page = "https://www.indeed.ca/m/jobs?q=Bioinformatics&l=";
             String webpage = getWebpage(page);
 
-            publishProgress("Started Indeed Grab");
+            publishProgress("Started collecting Indeed Jobs");
 
             //Pattern to search for all the job links displayed on the page using regex
             Pattern p = Pattern.compile("(data-)(jk=[\\w\\W]+?)( rel=nofollow)");  //(<h2 class="jobTitle"><a rel="nofollow" href=")([\w\W]+?)(">)
@@ -257,7 +232,7 @@ public class Main2Activity extends AppCompatActivity {
                 publishProgress("Matched Indeed Link");
             }
 
-            publishProgress("Grabbed all Indeed Links. ex: " + IndJobLinks.get(0));
+            publishProgress("Grabbed all Indeed Links");
 
             //Pattern to search for all the job titles displayed on the page using regex
             Pattern p2 = Pattern.compile("(jobTitle-color-purple\">)([\\w\\W]+?)(</h2></div>)");
@@ -270,7 +245,7 @@ public class Main2Activity extends AppCompatActivity {
                 IndJobTitles.add(m.group(2));
             }
 
-            publishProgress("Grabbed Indeed Job Titles. ex: " + IndJobTitles.get(0));
+            publishProgress("Grabbed Indeed job titles");
 
             //Pattern to search for all the job post dates displayed on the page using regex
             Pattern p3 = Pattern.compile("(<span class=\"date\">)([\\w\\W]+?)(</span>)");
@@ -283,7 +258,7 @@ public class Main2Activity extends AppCompatActivity {
                 IndJobPDate.add(m.group(2));
             }
 
-            publishProgress("Grabbed Indeed Post Date. ex: " + IndJobPDate.get(0));
+            publishProgress("Collected Indeed post dates");
 
             //Create an iterator to continue through the arraylist
             Iterator<String> itr = IndJobLinks.iterator();
@@ -301,7 +276,7 @@ public class Main2Activity extends AppCompatActivity {
                 IndBodies.add(parseJob(IndeedDesc(webPage2)));
             }
 
-            publishProgress("Grabbed and parsed Indeed Descriptions. ex: " + IndBodies.get(0));
+            publishProgress("Collected Indeed job descriptions");
 
             //Choose specific links that contain the keywords
             ArrayList<Integer> IndQualified = chooseLinks(IndBodies, queryTerms);
@@ -312,11 +287,11 @@ public class Main2Activity extends AppCompatActivity {
                 QualIndeed.add(IndJobTitles.get(i));
                 QualIndeed.add("Indeed");
                 QualIndeed.add(IndJobPDate.get(i));
-                QualIndeed.add(IndBodies.get(i));
                 QualIndeed.add(IndJobLinks.get(i));
+                QualIndeed.add(IndBodies.get(i));
             }
 
-            publishProgress("Finished selecting indeed jobs. ex: " + QualIndeed.get(0));
+            publishProgress("Finished selecting indeed jobs");
 
             return QualIndeed;
         }
@@ -389,7 +364,7 @@ public class Main2Activity extends AppCompatActivity {
                 //publishProgress("Grabbed description: " + body);
 
             }
-            publishProgress("Grabbed description");
+            publishProgress("Figured out what the job is!");
             return body;
         }
         //This method parses the job description
@@ -413,6 +388,7 @@ public class Main2Activity extends AppCompatActivity {
             Pattern p5 = Pattern.compile("</td>");
             body = p5.matcher(body).replaceAll("		  ");
 
+            publishProgress("Collecting the important data");
             return body;
         }
 
@@ -450,7 +426,7 @@ public class Main2Activity extends AppCompatActivity {
                 }
                 count++;
             } //End Body while
-            onProgressUpdate("Found Qualification Match. ex: " + MatchPos);
+            publishProgress("Filtered jobs for desired qualities");
             return MatchPos;
         } //End chooseLinks
     }// End of Async
