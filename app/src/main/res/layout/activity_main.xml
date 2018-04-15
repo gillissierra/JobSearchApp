@@ -30,14 +30,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:onClick="onCheckboxClicked"
         android:text="@string/phd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.029"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.11"
-        android:onClick="onCheckboxClicked"/>
+        app:layout_constraintVertical_bias="0.11" />
 
     <CheckBox
         android:id="@+id/checkBoxMSc"
@@ -47,14 +47,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:onClick="onCheckboxClicked"
         android:text="@string/m_sc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.441"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.11"
-        android:onClick="onCheckboxClicked"/>
+        app:layout_constraintVertical_bias="0.11" />
 
     <CheckBox
         android:id="@+id/checkBoxBSc"
@@ -64,14 +64,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:onClick="onCheckboxClicked"
         android:text="@string/b_sc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.813"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.11"
-        android:onClick="onCheckboxClicked"/>
+        app:layout_constraintVertical_bias="0.11" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -96,14 +96,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:onClick="onCheckboxClicked"
         android:text="@string/senior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.065"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.421"
-        android:onClick="onCheckboxClicked" />
+        app:layout_constraintVertical_bias="0.421" />
 
     <CheckBox
         android:id="@+id/checkBoxAssoc"
@@ -113,14 +113,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:onClick="onCheckboxClicked"
         android:text="@string/associate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.441"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.421"
-        android:onClick="onCheckboxClicked" />
+        app:layout_constraintVertical_bias="0.421" />
 
     <Button
         android:id="@+id/button"
@@ -140,5 +140,22 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.836"
         android:onClick="sendSearch" />
+
+    <CheckBox
+        android:id="@+id/checkBoxALL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="ALL"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.045"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxSenior"
+        app:layout_constraintVertical_bias="0.135"
+        android:onClick="onCheckboxClicked" />
 
 </android.support.constraint.ConstraintLayout>

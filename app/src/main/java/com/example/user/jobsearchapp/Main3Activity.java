@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main3Activity extends AppCompatActivity {
+
+    // collects and displays job postings that match chosen terms
+    // converts string list into a list of jobPost objects
+    // uses a recycler view display objects on XML
     private List<JobPost> jobList2 = new ArrayList<>();
     private RecyclerView recyclerView2;
     private JobPostsAdapter jAdapter2;
@@ -30,6 +34,7 @@ public class Main3Activity extends AppCompatActivity {
 
         recyclerView2 = (RecyclerView) findViewById(R.id.recycler_view2);
 
+        // interface to recycler view
         jAdapter2 = new JobPostsAdapter(jobList2);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView2.setLayoutManager(mLayoutManager);
@@ -46,10 +51,13 @@ public class Main3Activity extends AppCompatActivity {
                 JobPost PostList2 = jobList2.get(position);
 
                 String JobBody;
+                String titlePick;
                 JobBody = PostList2.getDesc();
+                titlePick = PostList2.getTitle();
                 if(JobBody.length() != 0) {
                     Intent DescDisplay = new Intent(getBaseContext(), Main4Activity.class);
                     DescDisplay.putExtra("BodyOfJob", JobBody);
+                    DescDisplay.putExtra("TitlePick", titlePick);
                     startActivity(DescDisplay);
                 }else{
                     JobBody = "Sorry bub";
@@ -57,18 +65,13 @@ public class Main3Activity extends AppCompatActivity {
                         DescDisplay.putExtra("BodyOfJob", JobBody);
                         startActivity(DescDisplay);
                 }
-
             }
-
             @Override
             public void onLongClick(View view, int position) {
 
             }
 
-
         }));
-
-
 
 
     }

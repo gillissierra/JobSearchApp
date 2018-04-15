@@ -6,7 +6,7 @@ public class JobPost {
 
     public JobPost() {
     }
-
+    // creates an object that contains all the information collected for a particular job post
     public JobPost(String title, String site, String PostDate, String JLink, String Desc) {
         this.title = title;
         this.PostDate = PostDate;
@@ -15,6 +15,7 @@ public class JobPost {
         this.Desc = Desc;
     }
 
+    // series of methods to set and obtain specific information on the object
     public String getTitle() {
         return title;
     }

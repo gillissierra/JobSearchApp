@@ -16,6 +16,7 @@ public class JobPostsAdapter extends RecyclerView.Adapter<JobPostsAdapter.MyView
         public TextView title, site, PostDate;
 
         public MyViewHolder(View view) {
+            // connects a variable to an XML text view
             super(view);
             title = (TextView) view.findViewById(R.id.title);
             PostDate = (TextView) view.findViewById(R.id.PostDate);
@@ -27,7 +28,7 @@ public class JobPostsAdapter extends RecyclerView.Adapter<JobPostsAdapter.MyView
     public JobPostsAdapter(List<JobPost> postingList) {
         this.postingList = postingList;
     }
-
+        // sends job post object's information to textView
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
